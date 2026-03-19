@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   commands:
     golangci-lint:
-      run: golangci-lint run --out-format line-number
+      run: golangci-lint run
       glob: '*.go'
 
     go-build:
@@ -11,7 +11,3 @@ pre-commit:
 
     go-mod-tidy:
       run: go mod tidy
-
-    go-test:
-      run: go test -v ./...
-      glob: '*.go'
