@@ -3,20 +3,20 @@ package commands
 import (
 	"fmt"
 
-	"github.com/menloresearch/menlo-cli/internal/clients/platform"
+	"github.com/menloresearch/cli/internal/clients/platform"
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize menlo-cli",
+	Short: "Initialize menlo",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runInit()
 	},
 }
 
 func runInit() error {
-	fmt.Println("Welcome to menlo-cli!")
+	fmt.Println("Welcome to menlo!")
 	fmt.Println()
 
 	// Step 1: Get API key from TUI

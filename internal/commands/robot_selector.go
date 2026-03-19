@@ -5,7 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/menloresearch/menlo-cli/internal/clients/platform"
+	"github.com/menloresearch/cli/internal/clients/platform"
 )
 
 type robotItem struct {

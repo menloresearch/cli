@@ -34,7 +34,7 @@ func ConfigDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "menlo-cli"), nil
+	return filepath.Join(dir, "menlo"), nil
 }
 
 func ConfigPath() (string, error) {

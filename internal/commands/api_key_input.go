@@ -57,7 +57,7 @@ func (m *APIKeyInput) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *APIKeyInput) View() string {
 	return fmt.Sprintf(`
-Welcome to menlo-cli!
+Welcome to menlo!
 
 To get your API key, please visit:
 https://platform.menlo.ai/account/api-keys

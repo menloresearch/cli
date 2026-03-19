@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"github.com/menloresearch/menlo-cli/internal/clients/platform"
-	"github.com/menloresearch/menlo-cli/internal/config"
+	"github.com/menloresearch/cli/internal/clients/platform"
+	"github.com/menloresearch/cli/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -94,8 +94,8 @@ var robotActionCmd = &cobra.Command{
   turn-right  Turn the robot right
 
 Examples:
-  menlo-cli robot action forward
-  menlo-cli robot action left --robot-id <robot-id>`,
+  menlo robot action forward
+  menlo robot action left --robot-id <robot-id>`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		action := args[0]

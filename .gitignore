@@ -7,7 +7,7 @@
 *.dll
 *.so
 *.dylib
-/menlo-cli
+/menlo
 
 # Test binary, built with `go test -c`
 *.test

@@ -1,4 +1,4 @@
-module github.com/menloresearch/menlo-cli
+module github.com/menloresearch/cli
 
 go 1.26.1
 
