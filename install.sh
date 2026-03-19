@@ -141,6 +141,38 @@ install() {
     fi
     log_info "Version $VERSION written to config"
 
+    # Install shell completions to config directory (not modifying user shell files)
+    COMPLETION_DIR="$CONFIG_DIR/completions"
+    mkdir -p "$COMPLETION_DIR"
+
+    # Detect current shell
+    SHELL_NAME="$(basename "$SHELL" 2>/dev/null || echo "bash")"
+
+    case "$SHELL_NAME" in
+        zsh)
+            "$BINARY_NAME" completion zsh > "$COMPLETION_DIR/zsh"
+            log_info "Zsh completion installed to $COMPLETION_DIR/zsh"
+            log_info "Add to your .zshrc: source $COMPLETION_DIR/zsh"
+            ;;
+        fish)
+            "$BINARY_NAME" completion fish > "$COMPLETION_DIR/fish"
+            log_info "Fish completion installed to $COMPLETION_DIR/fish"
+            log_info "Add to your config.fish: source $COMPLETION_DIR/fish"
+            ;;
+        bash)
+            "$BINARY_NAME" completion bash > "$COMPLETION_DIR/bash"
+            log_info "Bash completion installed to $COMPLETION_DIR/bash"
+            log_info "Add to your .bashrc: source $COMPLETION_DIR/bash"
+            ;;
+        *)
+            # Install all completions
+            "$BINARY_NAME" completion bash > "$COMPLETION_DIR/bash" 2>/dev/null || true
+            "$BINARY_NAME" completion zsh > "$COMPLETION_DIR/zsh" 2>/dev/null || true
+            "$BINARY_NAME" completion fish > "$COMPLETION_DIR/fish" 2>/dev/null || true
+            log_info "Completions installed to $COMPLETION_DIR"
+            ;;
+    esac
+
     # Cleanup
     cd /
     rm -rf "$TEMP_DIR"
