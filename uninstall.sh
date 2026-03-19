@@ -77,24 +77,30 @@ uninstall() {
 
     log_info "Uninstall complete!"
 
-    # Show instructions for shell completions
-    case "$(uname -s)" in
-        Darwin*)
-            CONFIG_DIR="$HOME/Library/Application Support/menlo"
-            ;;
-        Linux*)
-            CONFIG_DIR="$HOME/.config/menlo"
-            ;;
-        CYGWIN*|MINGW*)
-            CONFIG_DIR="$APPDATA/menlo"
-            ;;
-    esac
+    # Remove completion lines from shell rc files
+    log_info "Removing shell completion lines..."
 
-    log_info "Shell completions are in: $CONFIG_DIR/completions/"
-    log_info "Remove these lines from your shell rc file if you added them:"
-    log_info "  source $CONFIG_DIR/completions/zsh   # for zsh"
-    log_info "  source $CONFIG_DIR/completions/fish  # for fish"
-    log_info "  source $CONFIG_DIR/completions/bash  # for bash"
+    # Zsh
+    if [ -f "$HOME/.zshrc" ]; then
+        sed -i '' '/menlo\/completions\//d' "$HOME/.zshrc" 2>/dev/null || \
+        sed -i '/menlo\/completions\//d' "$HOME/.zshrc" 2>/dev/null || true
+        log_info "Removed completion from .zshrc"
+    fi
+
+    # Bash
+    if [ -f "$HOME/.bashrc" ]; then
+        sed -i '' '/menlo\/completions\//d' "$HOME/.bashrc" 2>/dev/null || \
+        sed -i '/menlo\/completions\//d' "$HOME/.bashrc" 2>/dev/null || true
+        log_info "Removed completion from .bashrc"
+    fi
+
+    # Fish
+    FISH_CONFIG="$HOME/.config/fish/config.fish"
+    if [ -f "$FISH_CONFIG" ]; then
+        sed -i '' '/menlo\/completions\//d' "$FISH_CONFIG" 2>/dev/null || \
+        sed -i '/menlo\/completions\//d' "$FISH_CONFIG" 2>/dev/null || true
+        log_info "Removed completion from config.fish"
+    fi
 }
 
 # Check if curl is installed

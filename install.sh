@@ -141,9 +141,12 @@ install() {
     fi
     log_info "Version $VERSION written to config"
 
-    # Install shell completions to config directory (not modifying user shell files)
+    # Install shell completions and add to shell rc file
     COMPLETION_DIR="$CONFIG_DIR/completions"
     mkdir -p "$COMPLETION_DIR"
+
+    # Escape path for shell (handle spaces)
+    ESCAPED_COMPLETION_DIR=$(printf '%s' "$COMPLETION_DIR" | sed 's/ /\\ /g')
 
     # Detect current shell
     SHELL_NAME="$(basename "$SHELL" 2>/dev/null || echo "bash")"
@@ -152,17 +155,40 @@ install() {
         zsh)
             "$BINARY_NAME" completion zsh > "$COMPLETION_DIR/zsh"
             log_info "Zsh completion installed to $COMPLETION_DIR/zsh"
-            log_info "Add to your .zshrc: source $COMPLETION_DIR/zsh"
+
+            # Add to .zshrc if not already present
+            if ! grep -q "menlo/completions/zsh" "$HOME/.zshrc" 2>/dev/null; then
+                echo "source $ESCAPED_COMPLETION_DIR/zsh" >> "$HOME/.zshrc"
+                log_info "Added completion to .zshrc"
+            else
+                log_info "Completion already in .zshrc"
+            fi
             ;;
         fish)
             "$BINARY_NAME" completion fish > "$COMPLETION_DIR/fish"
             log_info "Fish completion installed to $COMPLETION_DIR/fish"
-            log_info "Add to your config.fish: source $COMPLETION_DIR/fish"
+
+            # Add to config.fish if not already present
+            FISH_CONFIG="$HOME/.config/fish/config.fish"
+            mkdir -p "$HOME/.config/fish"
+            if [ ! -f "$FISH_CONFIG" ] || ! grep -q "menlo/completions/fish" "$FISH_CONFIG" 2>/dev/null; then
+                echo "source $ESCAPED_COMPLETION_DIR/fish" >> "$FISH_CONFIG"
+                log_info "Added completion to config.fish"
+            else
+                log_info "Completion already in config.fish"
+            fi
             ;;
         bash)
             "$BINARY_NAME" completion bash > "$COMPLETION_DIR/bash"
             log_info "Bash completion installed to $COMPLETION_DIR/bash"
-            log_info "Add to your .bashrc: source $COMPLETION_DIR/bash"
+
+            # Add to .bashrc if not already present
+            if ! grep -q "menlo/completions/bash" "$HOME/.bashrc" 2>/dev/null; then
+                echo "source $ESCAPED_COMPLETION_DIR/bash" >> "$HOME/.bashrc"
+                log_info "Added completion to .bashrc"
+            else
+                log_info "Completion already in .bashrc"
+            fi
             ;;
         *)
             # Install all completions
