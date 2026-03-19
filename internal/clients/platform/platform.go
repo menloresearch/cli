@@ -192,6 +192,12 @@ func (c *Client) GetRobot(robotID string) (*RobotResponse, error) {
 	return &robot, nil
 }
 
+// SessionResponse represents the WebRTC session info
+type SessionResponse struct {
+	SFUEndpoint string `json:"sfu_endpoint"`
+	WebRTCToken string `json:"webrtc_token"`
+}
+
 // ValidSemanticCommands are the supported semantic commands
 var ValidSemanticCommands = []string{
 	"forward",
@@ -216,4 +222,25 @@ func (c *Client) SendSemanticCommand(robotID, command string) error {
 	defer closeBody(resp)
 
 	return nil
+}
+
+// CreateSession creates a new session for a robot and returns WebRTC credentials
+func (c *Client) CreateSession(robotID string) (*SessionResponse, error) {
+	resp, err := c.doRequest("POST", "v1/robots/"+robotID+"/session", nil)
+	if err != nil {
+		return nil, err
+	}
+	defer closeBody(resp)
+
+	var result GeneralResponse[SessionResponse]
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	var session SessionResponse
+	if err := result.ParseResult(&session); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
 }

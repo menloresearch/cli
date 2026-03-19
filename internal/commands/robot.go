@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/menloresearch/cli/internal/clients/platform"
 	"github.com/menloresearch/cli/internal/config"
@@ -145,6 +146,48 @@ Examples:
 	},
 }
 
+var robotSessionCmd = &cobra.Command{
+	Use:   "session",
+	Short: "Create a WebRTC session for a robot",
+	Long: `Create a session to connect to a robot via WebRTC.
+Returns an SFU endpoint and WebRTC token for connecting.
+
+Examples:
+  menlo robot session --robot-id <robot-id>`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		robotID, err := cmd.Flags().GetString("robot-id")
+		if err != nil {
+			return err
+		}
+
+		// If no robot ID provided, try default
+		if robotID == "" {
+			cfg, err := config.Load()
+			if err != nil {
+				if !config.IsNotExist(err) {
+					return err
+				}
+			}
+			if cfg != nil {
+				robotID = cfg.DefaultRobotID
+			}
+		}
+
+		// If still no robot ID, ask user to select
+		if robotID == "" {
+			robotID, err = selectRobotInteractive()
+			if err != nil {
+				return err
+			}
+			if robotID == "" {
+				return nil
+			}
+		}
+
+		return createRobotSession(robotID)
+	},
+}
+
 // selectRobotInteractive prompts user to select a robot from list
 func selectRobotInteractive() (string, error) {
 	client, err := platform.NewClient()
@@ -207,11 +250,43 @@ func sendRobotAction(robotID, action string) error {
 	return nil
 }
 
+func createRobotSession(robotID string) error {
+	client, err := platform.NewClient()
+	if err != nil {
+		return err
+	}
+
+	session, err := client.CreateSession(robotID)
+	if err != nil {
+		return err
+	}
+
+	// Generate meet link
+	meetURL := generateMeetLink(session.SFUEndpoint, session.WebRTCToken)
+
+	fmt.Printf("Session created for robot %s\n\n", robotID)
+	fmt.Printf("SFU Endpoint: %s\n", session.SFUEndpoint)
+	fmt.Printf("WebRTC Token: %s\n\n", session.WebRTCToken)
+	fmt.Printf("Join URL: %s\n", meetURL)
+
+	return nil
+}
+
+func generateMeetLink(sfuEndpoint, token string) string {
+	baseURL := "https://meet.livekit.io/custom"
+	params := url.Values{}
+	params.Set("liveKitUrl", sfuEndpoint)
+	params.Set("token", token)
+	return baseURL + "?" + params.Encode()
+}
+
 func init() {
 	robotStatusCmd.Flags().String("robot-id", "", "Robot ID")
 	robotActionCmd.Flags().String("robot-id", "", "Robot ID")
+	robotSessionCmd.Flags().String("robot-id", "", "Robot ID")
 	robotCmd.AddCommand(robotListCmd)
 	robotCmd.AddCommand(robotStatusCmd)
 	robotCmd.AddCommand(robotActionCmd)
+	robotCmd.AddCommand(robotSessionCmd)
 	rootCmd.AddCommand(robotCmd)
 }
