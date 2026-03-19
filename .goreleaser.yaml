@@ -1,14 +1,14 @@
 # .goreleaser.yaml
 version: 2
 
-project_name: menlo-cli
+project_name: menlo
 
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - id: menlo-cli
+  - id: menlo
     goos:
       - darwin
       - linux
@@ -16,8 +16,8 @@ builds:
     goarch:
       - amd64
       - arm64
-    binary: menlo-cli
-    main: ./cmd/menlo-cli
+    binary: menlo
+    main: ./cmd/menlo
     env:
       - CGO_ENABLED=0
     flags:
@@ -50,17 +50,4 @@ changelog:
 release:
   github:
     owner: menloresearch
-    name: menlo-cli
-
-brew:
-  - id: homebrew
-    github:
-      owner: menloresearch
-      name: homebrew-menlo-cli
-    name: menlo-cli
-    description: A CLI tool for accessing the Menlo Robot.
-    license: MIT
-    homepage: https://github.com/menloresearch/menlo-cli
-    test: |
-      system "#{bin}/menlo-cli --help"
-    caveats: Run 'menlo-cli init' to set up your API key and default robot.
+    name: cli

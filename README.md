@@ -1,64 +1,64 @@
-# menlo-cli
+# menlo
 
 A CLI tool for Menlo research and development.
 
 ## Installation
 
 ```bash
-go install github.com/menloresearch/menlo-cli@latest
+go install github.com/menloresearch/cli@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/menloresearch/menlo-cli
-cd menlo-cli
-go build -o menlo-cli ./cmd/menlo-cli
+git clone https://github.com/menloresearch/cli
+cd menlo
+go build -o menlo ./cmd/menlo
 ```
 
 ## Quick Start
 
 ```bash
 # Initialize the CLI (sets up API key and default robot)
-menlo-cli init
+menlo init
 
 # Or configure manually
-menlo-cli config apikey <your-api-key>
-menlo-cli config default-robot <robot-id>
+menlo config apikey <your-api-key>
+menlo config default-robot <robot-id>
 ```
 
 ## Commands
 
-### menlo-cli init
+### menlo init
 
-Initialize menlo-cli with your API key and select a default robot.
+Initialize menlo with your API key and select a default robot.
 
 ```bash
-menlo-cli init
+menlo init
 ```
 
-### menlo-cli robot
+### menlo robot
 
 Manage robots.
 
 #### List all robots
 
 ```bash
-menlo-cli robot list
+menlo robot list
 ```
 
 #### Show robot status
 
 ```bash
-menlo-cli robot status                         # Use default robot
-menlo-cli robot status --robot-id <robot-id>  # Use specific robot
+menlo robot status                         # Use default robot
+menlo robot status --robot-id <robot-id>  # Use specific robot
 ```
 
 #### Send action to robot
 
 ```bash
-menlo-cli robot action forward                 # Use default robot
-menlo-cli robot action left --robot-id <id>   # Use specific robot
+menlo robot action forward                 # Use default robot
+menlo robot action left --robot-id <id>   # Use specific robot
 ```
 
 Available actions:
@@ -69,50 +69,50 @@ Available actions:
 - `turn-left` - Turn the robot left
 - `turn-right` - Turn the robot right
 
-### menlo-cli config
+### menlo config
 
 Manage configuration.
 
 #### Set API key
 
 ```bash
-menlo-cli config apikey <your-api-key>
+menlo config apikey <your-api-key>
 ```
 
 #### Show current API key
 
 ```bash
-menlo-cli config apikey
+menlo config apikey
 ```
 
 #### Set default robot
 
 ```bash
-menlo-cli config default-robot <robot-id>
+menlo config default-robot <robot-id>
 ```
 
 Or interactively:
 
 ```bash
-menlo-cli config default-robot
+menlo config default-robot
 ```
 
 ## Configuration
 
 Configuration is stored in:
-- macOS: `~/Library/Application Support/menlo-cli/config.yaml`
-- Linux: `~/.config/menlo-cli/config.yaml`
-- Windows: `%APPDATA%\menlo-cli\config.yaml`
+- macOS: `~/Library/Application Support/menlo/config.yaml`
+- Linux: `~/.config/menlo/config.yaml`
+- Windows: `%APPDATA%\menlo\config.yaml`
 
 ## Shell Completion
 
 ```bash
 # Bash
-menlo-cli completion bash > /etc/bash_completion.d/menlo-cli
+menlo completion bash > /etc/bash_completion.d/menlo
 
 # Zsh
-menlo-cli completion zsh > "${fpath[1]}/_menlo-cli"
+menlo completion zsh > "${fpath[1]}/_menlo"
 
 # Fish
-menlo-cli completion fish > ~/.config/fish/completions/menlo-cli.fish
+menlo completion fish > ~/.config/fish/completions/menlo.fish
 ```

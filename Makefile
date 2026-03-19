@@ -2,7 +2,11 @@
 
 # Build the binary
 build:
-	go build -o menlo-cli ./cmd/menlo-cli
+	go build -o menlo ./cmd/menlo
+
+# Install binary locally
+install: build
+	install -m 755 menlo /usr/local/bin/
 
 # Build for all platforms
 build-all:
@@ -18,12 +22,12 @@ lint:
 
 # Clean build artifacts
 clean:
-	rm -f menlo-cli
+	rm -f menlo
 	rm -rf dist/
 
 # Install locally
 install: build
-	install -m 755 menlo-cli /usr/local/bin/
+	install -m 755 menlo /usr/local/bin/
 
 # Install lefthook hooks
 pre-commit-install:

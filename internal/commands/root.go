@@ -7,7 +7,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:               "menlo-cli",
+	Use:               "menlo",
 	Short:             "Menlo CLI - A CLI tool for Menlo",
 	Long:              `A CLI tool for Menlo research and development.`,
 	DisableAutoGenTag: true,

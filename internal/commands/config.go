@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/menloresearch/menlo-cli/internal/clients/platform"
-	"github.com/menloresearch/menlo-cli/internal/config"
+	"github.com/menloresearch/cli/internal/clients/platform"
+	"github.com/menloresearch/cli/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -41,7 +41,7 @@ var apikeyCmd = &cobra.Command{
 			if err != nil {
 				if os.IsNotExist(err) {
 					fmt.Println("Get your API key from: https://platform.menlo.ai/account/api-keys")
-					fmt.Println("Then run: menlo-cli config apikey <your-api-key>")
+					fmt.Println("Then run: menlo config apikey <your-api-key>")
 					return nil
 				}
 				return err
@@ -51,7 +51,7 @@ var apikeyCmd = &cobra.Command{
 			} else {
 				fmt.Println("No API key set")
 				fmt.Println("Get your API key from: https://platform.menlo.ai/account/api-keys")
-				fmt.Println("Then run: menlo-cli config apikey <your-api-key>")
+				fmt.Println("Then run: menlo config apikey <your-api-key>")
 			}
 			return nil
 		}

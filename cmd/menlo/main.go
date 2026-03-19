@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/menloresearch/menlo-cli/internal/commands"
+	"github.com/menloresearch/cli/internal/commands"
 )
 
 func main() {

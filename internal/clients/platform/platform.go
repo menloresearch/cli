@@ -9,10 +9,10 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/menloresearch/menlo-cli/internal/config"
+	"github.com/menloresearch/cli/internal/config"
 )
 
-var ErrNoAPIKey = errors.New("API key not set. Run 'menlo-cli config apikey' to set it")
+var ErrNoAPIKey = errors.New("API key not set. Run 'menlo config apikey' to set it")
 
 type Client struct {
 	httpClient *http.Client
