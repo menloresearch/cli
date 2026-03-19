@@ -1,5 +1,5 @@
 # .goreleaser.yaml
-version: "2"
+version: 2
 
 project_name: menlo-cli
 
@@ -51,8 +51,6 @@ release:
   github:
     owner: menloresearch
     name: menlo-cli
-  draft: false
-  prerelease: auto
 
 brew:
   - id: homebrew
@@ -60,9 +58,9 @@ brew:
       owner: menloresearch
       name: homebrew-menlo-cli
     name: menlo-cli
-    description: "A CLI tool for accessing the Menlo Robot."
+    description: A CLI tool for accessing the Menlo Robot.
     license: MIT
-    homepage: "https://github.com/menloresearch/menlo-cli"
+    homepage: https://github.com/menloresearch/menlo-cli
     test: |
       system "#{bin}/menlo-cli --help"
-    caveats: "Run 'menlo-cli init' to set up your API key and default robot."
+    caveats: Run 'menlo-cli init' to set up your API key and default robot.
