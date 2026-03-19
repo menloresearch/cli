@@ -5,11 +5,8 @@ A CLI tool for accessing Menlo Robot.
 ## Quick Install
 
 ```bash
-# Install
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/menloresearch/cli/release/install.sh)"
 
-# Uninstall
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/menloresearch/cli/release/uninstall.sh)"
 ```
 
 Or build from source:
@@ -117,3 +114,8 @@ Configuration is stored in:
 - Linux: `~/.config/menlo/config.yaml`
 - Windows: `%APPDATA%\menlo\config.yaml`
 
+
+# Uninstall
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/menloresearch/cli/release/uninstall.sh)"
+```
