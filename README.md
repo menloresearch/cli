@@ -1,18 +1,22 @@
 # menlo
 
-A CLI tool for Menlo research and development.
+A CLI tool for accessing Menlo Robot.
 
-## Installation
+## Quick Install
 
 ```bash
-go install github.com/menloresearch/cli@latest
+# Install
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/menloresearch/cli/release/install.sh)"
+
+# Uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/menloresearch/cli/release/uninstall.sh)"
 ```
 
 Or build from source:
 
 ```bash
 git clone https://github.com/menloresearch/cli
-cd menlo
+cd cli
 go build -o menlo ./cmd/menlo
 ```
 
@@ -69,6 +73,15 @@ Available actions:
 - `turn-left` - Turn the robot left
 - `turn-right` - Turn the robot right
 
+#### Create WebRTC session
+
+```bash
+menlo robot session                         # Use default robot
+menlo robot session --robot-id <robot-id>  # Use specific robot
+```
+
+This opens a LiveKit meet session with the robot, returning an SFU endpoint, WebRTC token, and a join URL.
+
 ### menlo config
 
 Manage configuration.
@@ -104,15 +117,3 @@ Configuration is stored in:
 - Linux: `~/.config/menlo/config.yaml`
 - Windows: `%APPDATA%\menlo\config.yaml`
 
-## Shell Completion
-
-```bash
-# Bash
-menlo completion bash > /etc/bash_completion.d/menlo
-
-# Zsh
-menlo completion zsh > "${fpath[1]}/_menlo"
-
-# Fish
-menlo completion fish > ~/.config/fish/completions/menlo.fish
-```
