@@ -21,6 +21,7 @@ type Config struct {
 	APIKey         string `yaml:"api_key"`
 	PlatformURL    string `yaml:"platform_url"`
 	DefaultRobotID string `yaml:"default_robot_id"`
+	Version        string `yaml:"version"`
 }
 
 func (c *Config) SetDefaults() {
