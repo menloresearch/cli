@@ -22,6 +22,12 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Debug directory
+        run: |
+          pwd
+          ls -la
+          ls -la cmd/
+
       - name: Run tests
         run: go test -v ./...
 
@@ -29,19 +35,3 @@ jobs:
         run: |
           go build -o menlo-cli ./cmd/menlo-cli
           ls -la menlo-cli
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest

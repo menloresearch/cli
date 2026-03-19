@@ -1,4 +1,4 @@
-.PHONY: build lint test clean install release snapshot
+.PHONY: build lint test clean install release snapshot pre-commit pre-commit-install
 
 # Build the binary
 build:
@@ -24,6 +24,14 @@ clean:
 # Install locally
 install: build
 	install -m 755 menlo-cli /usr/local/bin/
+
+# Install lefthook hooks
+pre-commit-install:
+	lefthook install
+
+# Run pre-commit checks
+pre-commit:
+	lefthook run pre-commit
 
 # Create a release
 release:
