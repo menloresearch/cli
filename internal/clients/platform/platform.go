@@ -1,0 +1,213 @@
+package platform
+
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"time"
+
+	"github.com/menloresearch/menlo-cli/internal/config"
+)
+
+var ErrNoAPIKey = errors.New("API key not set. Run 'menlo-cli config apikey' to set it")
+
+type Client struct {
+	httpClient *http.Client
+	baseURL    string
+	apiKey     string
+}
+
+func NewClient() (*Client, error) {
+	cfg, err := config.Load()
+	if err != nil {
+		if config.IsNotExist(err) {
+			cfg = config.DefaultConfig()
+		} else {
+			return nil, err
+		}
+	}
+
+	return &Client{
+		httpClient: &http.Client{Timeout: 30 * time.Second},
+		baseURL:    cfg.PlatformURL,
+		apiKey:     cfg.APIKey,
+	}, nil
+}
+
+// RobotResponse represents a robot in the API response
+type RobotResponse struct {
+	ID    string `json:"id"`
+	Model string `json:"model"`
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+}
+
+// ListResponse is a generic list response
+type ListResponse[T any] struct {
+	Code   string          `json:"code"`
+	Result json.RawMessage `json:"result"`
+	NextID *string         `json:"next_id"`
+	Total  int64           `json:"total"`
+}
+
+func (r *ListResponse[T]) ParseResult(target *[]T) error {
+	if len(r.Result) == 0 {
+		*target = nil
+		return nil
+	}
+	return json.Unmarshal(r.Result, target)
+}
+
+// GeneralResponse is a generic single item response
+type GeneralResponse[T any] struct {
+	Code   string          `json:"code"`
+	Result json.RawMessage `json:"result"`
+}
+
+func (r *GeneralResponse[T]) ParseResult(target *T) error {
+	if len(r.Result) == 0 {
+		return nil
+	}
+	return json.Unmarshal(r.Result, target)
+}
+
+// doRequest makes an authenticated HTTP request
+func (c *Client) doRequest(method, path string, queryParams map[string]string) (*http.Response, error) {
+	return c.doRequestBody(method, path, queryParams, nil)
+}
+
+// doRequestBody makes an authenticated HTTP request with a body
+func (c *Client) doRequestBody(method, path string, queryParams map[string]string, body []byte) (*http.Response, error) {
+	if c.apiKey == "" {
+		return nil, fmt.Errorf("%w. Get your API key from: https://platform.menlo.ai/account/api-keys", ErrNoAPIKey)
+	}
+
+	reqURL, err := url.Parse(c.baseURL)
+	if err != nil {
+		return nil, err
+	}
+	reqURL.Path = path
+
+	q := reqURL.Query()
+	for k, v := range queryParams {
+		if v != "" {
+			q.Set(k, v)
+		}
+	}
+	if len(q) > 0 {
+		reqURL.RawQuery = q.Encode()
+	}
+
+	req, err := http.NewRequest(method, reqURL.String(), bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isOK(resp.StatusCode) {
+		return resp, getErrorMessage(resp.StatusCode)
+	}
+
+	return resp, nil
+}
+
+func isOK(code int) bool {
+	return code >= 200 && code < 300
+}
+
+func getErrorMessage(statusCode int) error {
+	switch statusCode {
+	case 401:
+		return fmt.Errorf("Invalid API key. Please visit https://platform.menlo.ai/account/api-keys to generate a new one.")
+	case 403:
+		return fmt.Errorf("Access forbidden")
+	case 404:
+		return fmt.Errorf("Robot not found or you don't have access to it")
+	case 500:
+		return fmt.Errorf("Internal server error")
+	default:
+		return fmt.Errorf("request failed with status: %d", statusCode)
+	}
+}
+
+// ListRobots fetches a list of robots
+func (c *Client) ListRobots(limit int, afterPublicID string) (*ListResponse[RobotResponse], error) {
+	resp, err := c.doRequest("GET", "v1/robots", map[string]string{
+		"limit":           fmt.Sprintf("%d", limit),
+		"after_public_id": afterPublicID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result ListResponse[RobotResponse]
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (r *ListResponse[RobotResponse]) Robots() ([]RobotResponse, error) {
+	var robots []RobotResponse
+	err := r.ParseResult(&robots)
+	return robots, err
+}
+
+// GetRobot fetches a robot by ID
+func (c *Client) GetRobot(robotID string) (*RobotResponse, error) {
+	resp, err := c.doRequest("GET", "v1/robots/"+robotID, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result GeneralResponse[RobotResponse]
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	var robot RobotResponse
+	if err := result.ParseResult(&robot); err != nil {
+		return nil, err
+	}
+
+	return &robot, nil
+}
+
+// ValidSemanticCommands are the supported semantic commands
+var ValidSemanticCommands = []string{
+	"forward",
+	"backward",
+	"left",
+	"right",
+	"turn-left",
+	"turn-right",
+}
+
+// SendSemanticCommand sends a semantic command to a robot
+func (c *Client) SendSemanticCommand(robotID, command string) error {
+	body, err := json.Marshal(map[string]string{"command": command})
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.doRequestBody("POST", "v1/robots/"+robotID+"/semantic-command", nil, body)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
+}
