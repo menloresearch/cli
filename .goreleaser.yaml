@@ -1,4 +1,6 @@
 # .goreleaser.yaml
+version: "2"
+
 project_name: menlo-cli
 
 before:
