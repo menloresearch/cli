@@ -125,16 +125,22 @@ func isOK(code int) bool {
 	return code >= 200 && code < 300
 }
 
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_ = resp.Body.Close()
+	}
+}
+
 func getErrorMessage(statusCode int) error {
 	switch statusCode {
 	case 401:
-		return fmt.Errorf("Invalid API key. Please visit https://platform.menlo.ai/account/api-keys to generate a new one.")
+		return fmt.Errorf("invalid API key, visit https://platform.menlo.ai/account/api-keys to generate a new one")
 	case 403:
-		return fmt.Errorf("Access forbidden")
+		return fmt.Errorf("access forbidden")
 	case 404:
-		return fmt.Errorf("Robot not found or you don't have access to it")
+		return fmt.Errorf("robot not found or you don't have access to it")
 	case 500:
-		return fmt.Errorf("Internal server error")
+		return fmt.Errorf("internal server error")
 	default:
 		return fmt.Errorf("request failed with status: %d", statusCode)
 	}
@@ -149,7 +155,7 @@ func (c *Client) ListRobots(limit int, afterPublicID string) (*ListResponse[Robo
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer closeBody(resp)
 
 	var result ListResponse[RobotResponse]
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -171,7 +177,7 @@ func (c *Client) GetRobot(robotID string) (*RobotResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer closeBody(resp)
 
 	var result GeneralResponse[RobotResponse]
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -207,7 +213,7 @@ func (c *Client) SendSemanticCommand(robotID, command string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer closeBody(resp)
 
 	return nil
 }

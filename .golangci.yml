@@ -1,0 +1,12 @@
+version: "2"
+
+run:
+  modules-download-mode: readonly
+
+issues:
+  exclude-rules:
+    - path: .github
+    - path: Makefile
+    - path: .goreleaser.yaml
+    - path: .lefthook.yml
+    - path: .golangci.yml

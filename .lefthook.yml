@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: true
+  commands:
+    golangci-lint:
+      run: golangci-lint run
+      glob: '*.go'
+
+    go-build:
+      run: go build -o /dev/null ./...
+      glob: '*.go'
+
+    go-mod-tidy:
+      run: go mod tidy
