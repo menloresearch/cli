@@ -84,34 +84,13 @@ var robotStatusCmd = &cobra.Command{
 }
 
 var robotActionCmd = &cobra.Command{
-	Use:   "action <action>",
-	Short: "Send an action to a robot",
-	Long: `Available actions:
-  forward     Move the robot forward
-  backward    Move the robot backward
-  left        Move the robot left
-  right       Move the robot right
-  turn-left   Turn the robot left
-  turn-right  Turn the robot right
-
-Examples:
-  menlo robot action forward
-  menlo robot action left --robot-id <robot-id>`,
-	Args: cobra.ExactArgs(1),
+	Use:               "action <action>",
+	Short:             "Send an action to a robot",
+	ValidArgs:         platform.ValidSemanticCommands,
+	Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	ValidArgsFunction: cobra.NoFileCompletions,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		action := args[0]
-
-		// Validate action
-		valid := false
-		for _, v := range platform.ValidSemanticCommands {
-			if action == v {
-				valid = true
-				break
-			}
-		}
-		if !valid {
-			return fmt.Errorf("invalid action: %s. Valid actions: forward, backward, left, right, turn-left, turn-right", action)
-		}
 
 		robotID, err := cmd.Flags().GetString("robot-id")
 		if err != nil {
@@ -148,8 +127,8 @@ Examples:
 
 var robotSessionCmd = &cobra.Command{
 	Use:   "session",
-	Short: "Create a WebRTC session for a robot",
-	Long: `Create a session to connect to a robot via WebRTC.
+	Short: "Join a WebRTC session for a robot",
+	Long: `Join a session to connect to a robot via WebRTC.
 Returns an SFU endpoint and WebRTC token for connecting.
 
 Examples:
@@ -185,6 +164,27 @@ Examples:
 		}
 
 		return createRobotSession(robotID)
+	},
+}
+
+var robotConnectCmd = &cobra.Command{
+	Use:   "connect [robot-id]",
+	Short: "Set or show the default robot",
+	Long: `Set or show the default robot. Same as 'menlo config default-robot'.
+
+Examples:
+  menlo robot connect              # Interactive selection
+  menlo robot connect <robot-id>   # Set directly`,
+	Args: cobra.MaximumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			// Interactive mode - show selection
+			return runRobotSelector()
+		}
+
+		// Set robot ID directly
+		robotID := args[0]
+		return saveDefaultRobot(robotID)
 	},
 }
 
@@ -280,13 +280,70 @@ func generateMeetLink(sfuEndpoint, token string) string {
 	return baseURL + "?" + params.Encode()
 }
 
+var robotSnapshotCmd = &cobra.Command{
+	Use:   "snapshot",
+	Short: "Download latest snapshot from a robot",
+	Long: `Download the latest snapshot image from a robot.
+The image is saved to ~/.config/menlo/snapshot/{robot-id}/latest.jpeg
+
+Examples:
+  menlo robot snapshot
+  menlo robot snapshot --robot-id <robot-id>`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		robotID, err := cmd.Flags().GetString("robot-id")
+		if err != nil {
+			return err
+		}
+
+		// If no robot ID provided, try default
+		if robotID == "" {
+			cfg, err := config.Load()
+			if err != nil {
+				if !config.IsNotExist(err) {
+					return err
+				}
+			}
+			if cfg != nil {
+				robotID = cfg.DefaultRobotID
+			}
+		}
+
+		// If still no robot ID, ask user to select
+		if robotID == "" {
+			robotID, err = selectRobotInteractive()
+			if err != nil {
+				return err
+			}
+			if robotID == "" {
+				return nil
+			}
+		}
+
+		client, err := platform.NewClient()
+		if err != nil {
+			return err
+		}
+
+		path, err := client.GetSnapshot(robotID)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Snapshot saved to: %s\n", path)
+		return nil
+	},
+}
+
 func init() {
 	robotStatusCmd.Flags().String("robot-id", "", "Robot ID")
 	robotActionCmd.Flags().String("robot-id", "", "Robot ID")
 	robotSessionCmd.Flags().String("robot-id", "", "Robot ID")
+	robotSnapshotCmd.Flags().String("robot-id", "", "Robot ID")
 	robotCmd.AddCommand(robotListCmd)
 	robotCmd.AddCommand(robotStatusCmd)
 	robotCmd.AddCommand(robotActionCmd)
 	robotCmd.AddCommand(robotSessionCmd)
+	robotCmd.AddCommand(robotSnapshotCmd)
+	robotCmd.AddCommand(robotConnectCmd)
 	rootCmd.AddCommand(robotCmd)
 }

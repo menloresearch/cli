@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/menloresearch/cli/internal/config"
@@ -222,6 +225,42 @@ func (c *Client) SendSemanticCommand(robotID, command string) error {
 	defer closeBody(resp)
 
 	return nil
+}
+
+// GetSnapshot downloads the latest snapshot image for a robot
+func (c *Client) GetSnapshot(robotID string) (string, error) {
+	resp, err := c.doRequest("GET", "v1/robots/"+robotID+"/snapshot", nil)
+	if err != nil {
+		return "", err
+	}
+	defer closeBody(resp)
+
+	// Get config dir for snapshot storage
+	configDir, err := config.ConfigDir()
+	if err != nil {
+		return "", err
+	}
+	snapshotDir := filepath.Join(configDir, "snapshot", robotID)
+
+	// Create directory if it doesn't exist
+	if err := os.MkdirAll(snapshotDir, 0755); err != nil {
+		return "", err
+	}
+
+	// Save the image
+	imagePath := filepath.Join(snapshotDir, "latest.jpeg")
+	outFile, err := os.Create(imagePath)
+	if err != nil {
+		return "", err
+	}
+	defer func() { _ = outFile.Close() }()
+
+	_, err = io.Copy(outFile, resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return imagePath, nil
 }
 
 // CreateSession creates a new session for a robot and returns WebRTC credentials
