@@ -70,14 +70,30 @@ Available actions:
 - `turn-left` - Turn the robot left
 - `turn-right` - Turn the robot right
 
-#### Create WebRTC session
+#### Join WebRTC session
 
 ```bash
 menlo robot session                         # Use default robot
 menlo robot session --robot-id <robot-id>  # Use specific robot
 ```
 
-This opens a LiveKit meet session with the robot, returning an SFU endpoint, WebRTC token, and a join URL.
+#### Set default robot
+
+```bash
+menlo robot connect              # Interactive selection
+menlo robot connect <robot-id>   # Set directly
+```
+
+Same as `menlo config default-robot`. Sets the default robot for the CLI.
+
+#### Download snapshot
+
+```bash
+menlo robot snapshot                         # Use default robot
+menlo robot snapshot --robot-id <robot-id>  # Use specific robot
+```
+
+Downloads the latest snapshot image from the robot and saves it to `~/.config/menlo/snapshot/{robot-id}/latest.jpeg`.
 
 ### menlo config
 
