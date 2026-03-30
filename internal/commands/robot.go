@@ -233,6 +233,16 @@ func showRobotStatus(robotID string) error {
 	fmt.Printf("Model: %s\n", robot.Model)
 	fmt.Printf("Type: %s\n", robot.Type)
 
+	if robot.Status != nil {
+		fmt.Printf("\nStatus:\n")
+		fmt.Printf("  Battery: %d%%", robot.Status.Battery.Level)
+		if robot.Status.Battery.Charging {
+			fmt.Printf(" (charging)")
+		}
+		fmt.Printf("\n")
+		fmt.Printf("  Last Updated: %s\n", robot.Status.LocalTimestamp().Format("2006-01-02 15:04:05"))
+	}
+
 	return nil
 }
 
