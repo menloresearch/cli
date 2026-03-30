@@ -40,12 +40,31 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
+// Battery represents battery status
+type Battery struct {
+	Level  int  `json:"level"`
+	Charging bool `json:"charging"`
+}
+
+// RobotStatus represents the robot's current status
+type RobotStatus struct {
+	RobotID   string  `json:"robot_id"`
+	Battery   Battery `json:"battery"`
+	Timestamp int64   `json:"timestamp"`
+}
+
+// LocalTimestamp returns the timestamp converted to local time
+func (r *RobotStatus) LocalTimestamp() time.Time {
+	return time.Unix(r.Timestamp, 0).Local()
+}
+
 // RobotResponse represents a robot in the API response
 type RobotResponse struct {
-	ID    string `json:"id"`
-	Model string `json:"model"`
-	Type  string `json:"type"`
-	Name  string `json:"name"`
+	ID     string       `json:"id"`
+	Model  string       `json:"model"`
+	Type   string       `json:"type"`
+	Name   string       `json:"name"`
+	Status *RobotStatus `json:"status,omitempty"`
 }
 
 // ListResponse is a generic list response
