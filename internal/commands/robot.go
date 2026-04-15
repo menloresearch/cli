@@ -351,9 +351,9 @@ func init() {
 	robotSnapshotCmd.Flags().String("robot-id", "", "Robot ID")
 	robotCmd.AddCommand(robotListCmd)
 	robotCmd.AddCommand(robotStatusCmd)
-	robotCmd.AddCommand(robotActionCmd)
+	// robotCmd.AddCommand(robotActionCmd)   // disabled
 	robotCmd.AddCommand(robotSessionCmd)
-	robotCmd.AddCommand(robotSnapshotCmd)
+	// robotCmd.AddCommand(robotSnapshotCmd) // disabled
 	robotCmd.AddCommand(robotConnectCmd)
 	rootCmd.AddCommand(robotCmd)
 }
