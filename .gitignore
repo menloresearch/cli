@@ -35,3 +35,5 @@ dist/
 # .idea/
 .vscode/
 .claude
+*.omc
+*.omp

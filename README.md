@@ -55,21 +55,6 @@ menlo robot status                         # Use default robot
 menlo robot status --robot-id <robot-id>  # Use specific robot
 ```
 
-#### Send action to robot
-
-```bash
-menlo robot action forward                 # Use default robot
-menlo robot action left --robot-id <id>   # Use specific robot
-```
-
-Available actions:
-- `forward` - Move the robot forward
-- `backward` - Move the robot backward
-- `left` - Move the robot left
-- `right` - Move the robot right
-- `turn-left` - Turn the robot left
-- `turn-right` - Turn the robot right
-
 #### Join WebRTC session
 
 ```bash
@@ -85,15 +70,6 @@ menlo robot connect <robot-id>   # Set directly
 ```
 
 Same as `menlo config default-robot`. Sets the default robot for the CLI.
-
-#### Download snapshot
-
-```bash
-menlo robot snapshot                         # Use default robot
-menlo robot snapshot --robot-id <robot-id>  # Use specific robot
-```
-
-Downloads the latest snapshot image from the robot and saves it to `~/.config/menlo/snapshot/{robot-id}/latest.jpeg`.
 
 ### menlo config
 
