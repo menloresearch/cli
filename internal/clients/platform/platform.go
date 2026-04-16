@@ -228,6 +228,7 @@ var ValidSemanticCommands = []string{
 	"right",
 	"turn-left",
 	"turn-right",
+	"stop",
 }
 
 // SendSemanticCommand sends a semantic command to a robot
