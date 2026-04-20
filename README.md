@@ -96,15 +96,13 @@ menlo config default-robot <robot-id>
 Or interactively:
 
 ```bash
-menlo config default-robot
+menlo robot connect
 ```
 
 ## Configuration
 
 Configuration is stored in:
-- macOS: `~/Library/Application Support/menlo/config.yaml`
-- Linux: `~/.config/menlo/config.yaml`
-- Windows: `%APPDATA%\menlo\config.yaml`
+- `~/.menlo/config.yaml`
 
 
 # Uninstall

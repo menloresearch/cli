@@ -39,14 +39,9 @@ detect_arch() {
     esac
 }
 
-# Detect config directory (matches Go's os.UserConfigDir)
+# Detect config directory (matches Go's os.UserHomeDir + ~/.menlo)
 detect_config_dir() {
-    case "$(uname -s)" in
-        Darwin*)    echo "$HOME/Library/Application Support";;
-        Linux*)     echo "$HOME/.config";;
-        CYGWIN*|MINGW*) echo "$APPDATA";;
-        *)          echo "$HOME/.config";;
-    esac
+    echo "$HOME/.menlo"
 }
 
 # Get latest version from GitHub
@@ -125,8 +120,7 @@ install() {
     fi
 
     # Write version to config (preserve existing config)
-    CONFIG_BASE_DIR=$(detect_config_dir)
-    CONFIG_DIR="$CONFIG_BASE_DIR/menlo"
+    CONFIG_DIR=$(detect_config_dir)
     mkdir -p "$CONFIG_DIR"
     CONFIG_FILE="$CONFIG_DIR/config.yaml"
     if [ -f "$CONFIG_FILE" ]; then

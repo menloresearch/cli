@@ -42,7 +42,7 @@ func NewClient() (*Client, error) {
 
 // Battery represents battery status
 type Battery struct {
-	Level  int  `json:"level"`
+	Level    int  `json:"level"`
 	Charging bool `json:"charging"`
 }
 
