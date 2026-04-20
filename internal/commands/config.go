@@ -39,7 +39,7 @@ var apikeyCmd = &cobra.Command{
 			// Show current or instructions
 			cfg, err := config.Load()
 			if err != nil {
-				if os.IsNotExist(err) {
+				if config.IsNotExist(err) {
 					fmt.Println("Get your API key from: https://platform.menlo.ai/account/api-keys")
 					fmt.Println("Then run: menlo config apikey <your-api-key>")
 					return nil
@@ -98,7 +98,10 @@ func runRobotSelector() error {
 func saveDefaultRobot(robotID string) error {
 	cfg, err := config.Load()
 	if err != nil {
-		return err
+		if !config.IsNotExist(err) {
+			return err
+		}
+		cfg = config.DefaultConfig()
 	}
 
 	cfg.DefaultRobotID = robotID
@@ -128,7 +131,7 @@ func saveDefaultRobot(robotID string) error {
 func saveAPIKey(apiKey string) error {
 	cfg, err := config.Load()
 	if err != nil {
-		if !os.IsNotExist(err) {
+		if !config.IsNotExist(err) {
 			return err
 		}
 		cfg = config.DefaultConfig()
