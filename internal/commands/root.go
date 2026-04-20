@@ -12,6 +12,7 @@ var rootCmd = &cobra.Command{
 	Long:              `A CLI tool for Menlo research and development.`,
 	DisableAutoGenTag: true,
 	SilenceUsage:      true,
+	Version:           versionString(),
 }
 
 func Execute() {
@@ -21,5 +22,7 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.SetVersionTemplate("{{printf \"%s %s\\n\" .Name .Version}}")
+	rootCmd.Flags().BoolP("version", "V", false, "Print the version number")
 	rootCmd.AddCommand(configCmd)
 }
