@@ -14,22 +14,6 @@ var configCmd = &cobra.Command{
 	Short: "Manage configuration",
 }
 
-var defaultRobotCmd = &cobra.Command{
-	Use:   "default-robot [robot-id]",
-	Short: "Set or show the default robot",
-	Args:  cobra.MaximumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) == 0 {
-			// Interactive mode - show selection
-			return runRobotSelector()
-		}
-
-		// Set robot ID directly
-		robotID := args[0]
-		return saveDefaultRobot(robotID)
-	},
-}
-
 var apikeyCmd = &cobra.Command{
 	Use:   "apikey [key]",
 	Short: "Manage your API key",
@@ -162,6 +146,5 @@ func saveAPIKey(apiKey string) error {
 }
 
 func init() {
-	configCmd.AddCommand(defaultRobotCmd)
 	configCmd.AddCommand(apikeyCmd)
 }
