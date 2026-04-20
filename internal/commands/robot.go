@@ -275,9 +275,9 @@ func createRobotSession(robotID string) error {
 	meetURL := generateMeetLink(session.SFUEndpoint, session.WebRTCToken)
 
 	fmt.Printf("Session created for robot %s\n\n", robotID)
-	fmt.Printf("SFU Endpoint: %s\n", session.SFUEndpoint)
-	fmt.Printf("WebRTC Token: %s\n\n", session.WebRTCToken)
-	fmt.Printf("Join URL: %s\n", meetURL)
+	fmt.Printf("Connection Endpoint: %s\n", session.SFUEndpoint)
+	fmt.Printf("Agent Token: %s\n\n", session.WebRTCToken)
+	fmt.Printf("You can also paste this URL into your browser to debug the sim: %s\n", meetURL)
 
 	return nil
 }
