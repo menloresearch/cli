@@ -31,11 +31,11 @@ func (c *Config) SetDefaults() {
 }
 
 func ConfigDir() (string, error) {
-	dir, err := os.UserConfigDir()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "menlo"), nil
+	return filepath.Join(homeDir, ".menlo"), nil
 }
 
 func ConfigPath() (string, error) {

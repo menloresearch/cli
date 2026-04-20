@@ -19,14 +19,9 @@ log_error() {
     printf "${RED}[ERROR]${NC} %s\n" "$1"
 }
 
-# Detect config directory (matches Go's os.UserConfigDir)
+# Detect config directory (matches Go's os.UserHomeDir + ~/.menlo)
 detect_config_dir() {
-    case "$(uname -s)" in
-        Darwin*)    echo "$HOME/Library/Application Support";;
-        Linux*)     echo "$HOME/.config";;
-        CYGWIN*|MINGW*) echo "$APPDATA";;
-        *)          echo "$HOME/.config";;
-    esac
+    echo "$HOME/.menlo"
 }
 
 # Prompt user for confirmation
@@ -60,8 +55,7 @@ uninstall() {
     fi
 
     # Detect config directory
-    CONFIG_BASE_DIR=$(detect_config_dir)
-    CONFIG_DIR="$CONFIG_BASE_DIR/menlo"
+    CONFIG_DIR=$(detect_config_dir)
 
     # Ask about config removal
     if [ -d "$CONFIG_DIR" ]; then
